@@ -316,7 +316,6 @@
 </head>
 <body>
 
-
 <button id="sound-button" class="neon-button">nie klikaj! (serio)</button>
 
  <audio id="bg-music" src="audio/muzyka.mp3" loop>
@@ -561,7 +560,7 @@
       document.getElementById('dice-result').textContent = `Wynik: ${result}`;
     }
 
-let currentSound = null; // globalnie, żeby kontrolować dźwięk
+let currentSound = null; // <-- globalna zmienna
 
 function showFullscreen(el) {
   const imgSrc = el.querySelector('.char-img').src;
@@ -569,7 +568,7 @@ function showFullscreen(el) {
   const desc = el.querySelector('.char-desc').textContent;
   const stats = el.querySelector('.stats').innerHTML;
 
-  // Stop poprzedniego dźwięku, jeśli jest
+  // Jeśli coś już gra, zatrzymaj to
   if (currentSound) {
     currentSound.pause();
     currentSound.currentTime = 0;
@@ -584,7 +583,7 @@ function showFullscreen(el) {
     });
   }
 
-  // Wypełniamy i pokazujemy panel
+  // Wypełnianie i pokazywanie panelu
   const sidePanel = document.getElementById('side-panel');
   const sidePanelImg = document.getElementById('side-panel-img');
   const sidePanelInfo = document.getElementById('side-panel-info');
@@ -599,7 +598,6 @@ function showFullscreen(el) {
   sidePanel.classList.add('active');
 }
 
-// Poprawiony przycisk zamykania (zgodny z HTML)
 const sidePanel = document.getElementById('side-panel');
 const closeBtn = document.getElementById('close-side-panel');
 
@@ -608,16 +606,52 @@ closeBtn.addEventListener('click', () => {
   if (currentSound) {
     currentSound.pause();
     currentSound.currentTime = 0;
+    currentSound = null;
   }
 });
 
-// Jeśli chcesz, możesz też zamykać ESC, ale tu zamyka tylko side-panel
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && sidePanel.classList.contains('active')) {
-    sidePanel.classList.remove('active');
-    if (currentSound) {
-      currentSound.pause();
-      currentSound.currentTime = 0;
+  if (e.key === 'Escape') {
+    if (sidePanel.classList.contains('active')) {
+      sidePanel.classList.remove('active');
+      if (currentSound) {
+        currentSound.pause();
+        currentSound.currentTime = 0;
+        currentSound = null;
+      }
+    }
+    // Reszta Twojego kodu ESC - np. mapy, fullscreenCard itp.
+    hideFullscreen();
+    mapContainer.classList.remove('active');
+    charactersContainer.style.display = 'flex';
+    mapButtonsContainer.style.display = 'flex';
+  }
+});
+  </script>
+<script>
+  const music = document.getElementById('bg-music');
+  const toggleBtn = document.getElementById('music-toggle');
+
+  toggleBtn.addEventListener('click', () => {
+    if (music.paused) {
+      music.play();
+      toggleBtn.textContent = 'Wyłącz muzykę';
+    } else {
+      music.pause();
+      toggleBtn.textContent = 'Włącz muzykę';
+    }
+  });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const sidePanel = document.getElementById('side-panel');
+    if (sidePanel.classList.contains('active')) {
+      sidePanel.classList.remove('active');
+
+      if (currentSound) {
+        currentSound.pause();
+        currentSound.currentTime = 0;
+        currentSound = null;
+      }
     }
   }
 });
